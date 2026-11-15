@@ -1,0 +1,31 @@
+name: indonesia_weather
+version: "1.0.0"
+config-version: 2
+profile: indonesia_weather
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  indonesia_weather:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  indonesia_weather:
+    +schema: reference
+    cities:
+      +column_types:
+        latitude: double precision
+        longitude: double precision
+    weather_codes:
+      +column_types:
+        weather_code: int

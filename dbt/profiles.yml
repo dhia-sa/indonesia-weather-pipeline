@@ -1,0 +1,16 @@
+# Credentials come from environment variables (never commit passwords).
+# Locally: put them in ../.env and run dbt via `python run_dbt.py ...`
+# In GitHub Actions: they come from repository secrets.
+indonesia_weather:
+  target: prod
+  outputs:
+    prod:
+      type: postgres
+      host: "{{ env_var('DB_HOST') }}"
+      port: "{{ env_var('DB_PORT', '5432') | int }}"
+      user: "{{ env_var('DB_USER') }}"
+      password: "{{ env_var('DB_PASSWORD') }}"
+      dbname: "{{ env_var('DB_NAME') }}"
+      schema: analytics
+      sslmode: "{{ env_var('DB_SSLMODE', 'require') }}"
+      threads: 4

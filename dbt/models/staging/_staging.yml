@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: stg_weather_daily
+    description: Typed daily weather, one row per city per day.
+    columns:
+      - name: weather_day_id
+        description: Surrogate key (city_id + date).
+        data_tests: [unique, not_null]
+      - name: city_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('cities')
+                field: city_id
+      - name: weather_date
+        data_tests: [not_null]
+      - name: temp_max_c
+        data_tests:
+          - value_between:
+              arguments: {min_value: -10, max_value: 50}
+      - name: temp_min_c
+        data_tests:
+          - value_between:
+              arguments: {min_value: -10, max_value: 50}
+      - name: precipitation_mm
+        data_tests:
+          - value_between:
+              arguments: {min_value: 0, max_value: 500}
+      - name: wind_direction_deg
+        data_tests:
+          - value_between:
+              arguments: {min_value: 0, max_value: 360}

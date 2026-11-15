@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw layer written by the Python extractor (extract/).
+    schema: raw
+    tables:
+      - name: weather_daily
+        description: One row per city per day; `payload` holds the API values untouched.
+        config:
+          loaded_at_field: "weather_date::timestamp"
+          # Archive data lags ~5 days, so only alert when it is clearly behind.
+          freshness:
+            warn_after: {count: 8, period: day}
+            error_after: {count: 12, period: day}
+        columns:
+          - name: city_id
+            data_tests: [not_null]
+          - name: weather_date
+            data_tests: [not_null]
+      - name: pipeline_runs
+        description: One row per extractor run (status, row counts, errors).

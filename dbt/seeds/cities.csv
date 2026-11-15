@@ -1,0 +1,11 @@
+city_id,city_name,province,island,latitude,longitude,timezone
+jakarta,Jakarta,DKI Jakarta,Java,-6.2088,106.8456,Asia/Jakarta
+bogor,Bogor,West Java,Java,-6.5971,106.8060,Asia/Jakarta
+bandung,Bandung,West Java,Java,-6.9175,107.6191,Asia/Jakarta
+semarang,Semarang,Central Java,Java,-6.9667,110.4167,Asia/Jakarta
+yogyakarta,Yogyakarta,DI Yogyakarta,Java,-7.7956,110.3695,Asia/Jakarta
+surabaya,Surabaya,East Java,Java,-7.2575,112.7521,Asia/Jakarta
+denpasar,Denpasar,Bali,Bali,-8.6705,115.2126,Asia/Makassar
+medan,Medan,North Sumatra,Sumatra,3.5952,98.6722,Asia/Jakarta
+makassar,Makassar,South Sulawesi,Sulawesi,-5.1477,119.4327,Asia/Makassar
+balikpapan,Balikpapan,East Kalimantan,Kalimantan,-1.2379,116.8529,Asia/Makassar

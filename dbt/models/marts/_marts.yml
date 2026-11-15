@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: dim_city
+    description: One row per city with location and data coverage.
+    columns:
+      - name: city_id
+        data_tests: [unique, not_null]
+
+  - name: fct_weather_daily
+    description: Daily weather per city with derived fields (mean temp, rainy day, rain intensity, weather description).
+    columns:
+      - name: weather_day_id
+        data_tests: [unique, not_null]
+      - name: city_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_city')
+                field: city_id
+      - name: rain_intensity
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['no rain', 'light', 'moderate', 'heavy', 'very heavy', 'extreme']
+
+  - name: mart_city_monthly
+    description: Monthly climate summary per city.
+    columns:
+      - name: days_observed
+        data_tests:
+          - value_between:
+              arguments: {min_value: 1, max_value: 31}
+
+  - name: mart_daily_anomaly
+    description: Daily temperature and rainfall compared with the city's normal for that month.
+    columns:
+      - name: weather_day_id
+        data_tests: [unique, not_null]
+
+  - name: mart_pipeline_runs
+    description: Extractor run history (status, duration, row counts).
+    columns:
+      - name: run_id
+        data_tests: [unique, not_null]
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['running', 'success', 'partial_failure', 'failed']
+
+  - name: mart_city_freshness
+    description: Latest available date and lag per city.
+    columns:
+      - name: city_id
+        data_tests: [unique, not_null]
