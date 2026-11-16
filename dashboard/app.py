@@ -20,22 +20,65 @@ load_dotenv()
 
 def _setting(key: str, default: str | None = None) -> str | None:
     """Read from Streamlit Cloud secrets first, then environment / .env."""
+    value = None
     try:
         if key in st.secrets:
-            return str(st.secrets[key])
+            value = str(st.secrets[key])
     except Exception:  # no secrets file locally
         pass
-    return os.getenv(key, default)
+    if value is None:
+        value = os.getenv(key, default)
+    return value.strip() if isinstance(value, str) else value  # stray spaces/newlines break logins
 
 
-CONNINFO = make_conninfo(
-    host=_setting("DB_HOST"),
-    port=_setting("DB_PORT", "5432"),
-    dbname=_setting("DB_NAME"),
-    user=_setting("DB_USER"),
-    password=_setting("DB_PASSWORD"),
-    sslmode=_setting("DB_SSLMODE", "require"),
+# Either one DATABASE_URL (paste Neon's connection string as-is) or separate DB_* settings.
+DATABASE_URL = _setting("DATABASE_URL")
+SETTINGS = {
+    "DB_HOST": _setting("DB_HOST"),
+    "DB_PORT": _setting("DB_PORT", "5432"),
+    "DB_NAME": _setting("DB_NAME"),
+    "DB_USER": _setting("DB_USER"),
+    "DB_PASSWORD": _setting("DB_PASSWORD"),
+    "DB_SSLMODE": _setting("DB_SSLMODE", "require"),
+}
+CONNINFO = DATABASE_URL or make_conninfo(
+    host=SETTINGS["DB_HOST"],
+    port=SETTINGS["DB_PORT"],
+    dbname=SETTINGS["DB_NAME"],
+    user=SETTINGS["DB_USER"],
+    password=SETTINGS["DB_PASSWORD"],
+    sslmode=SETTINGS["DB_SSLMODE"],
 )
+
+
+def check_connection() -> None:
+    """Fail with a readable explanation instead of Streamlit's redacted error."""
+    try:
+        with psycopg.connect(CONNINFO, connect_timeout=20) as conn:
+            conn.execute("select 1")
+        return
+    except psycopg.OperationalError as exc:
+        message = str(exc)
+
+    problems = []
+    if not DATABASE_URL:
+        missing = [k for k in ("DB_HOST", "DB_NAME", "DB_USER", "DB_PASSWORD") if not SETTINGS[k]]
+        if missing:
+            problems.append(f"Missing secrets: **{', '.join(missing)}**. Add them in Manage app → Settings → Secrets.")
+        host = SETTINGS["DB_HOST"] or ""
+        if "://" in host or "/" in host or "@" in host:
+            problems.append("`DB_HOST` should be only the host name (from `ep-` to `.neon.tech`), not a full URL.")
+        elif host and not host.endswith(".neon.tech"):
+            problems.append(f"`DB_HOST` is `{host}` - a Neon host normally ends with `.neon.tech`.")
+    for secret in (SETTINGS["DB_PASSWORD"], DATABASE_URL):
+        if secret:
+            message = message.replace(secret, "****")  # never show the password
+
+    st.error("Can't connect to the database.")
+    for p in problems:
+        st.markdown(f"- {p}")
+    st.code(message, language=None)
+    st.stop()
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -53,6 +96,7 @@ st.caption(
     "Data: [Open-Meteo](https://open-meteo.com/) (CC BY 4.0)."
 )
 
+check_connection()
 cities = query(
     "select city_id, city_name, island, first_weather_date, last_weather_date from marts.dim_city order by city_name"
 )
