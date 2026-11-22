@@ -4,7 +4,7 @@ An end-to-end data engineering project. Every day it collects weather data for 1
 [Open-Meteo](https://open-meteo.com/) API, loads it into Postgres, models it with dbt, and serves it in a
 Streamlit dashboard. The whole stack runs on free tiers.
 
-**Live dashboard:** _add your Streamlit link here_ · **Portfolio:** [dhia-sa.github.io](https://dhia-sa.github.io)
+**Live dashboard:** _(https://indonesia-weather-pipeline-2bixeqvwpodjkoxqbz32a9.streamlit.app/)_ · **Portfolio:** [dhia-sa.github.io](https://dhia-sa.github.io)
 
 > **Why weather?** In retail and F&B, weather drives store traffic and demand. This project builds a reliable,
 > tested weather dataset that could be joined to store sales to explain demand or improve forecasts.
