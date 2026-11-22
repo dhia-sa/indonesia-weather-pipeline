@@ -4,10 +4,20 @@ An end-to-end data engineering project. Every day it collects weather data for 1
 [Open-Meteo](https://open-meteo.com/) API, loads it into Postgres, models it with dbt, and serves it in a
 Streamlit dashboard. The whole stack runs on free tiers.
 
-**Live dashboard:** _(https://indonesia-weather-pipeline-2bixeqvwpodjkoxqbz32a9.streamlit.app/)_ · **Portfolio:** [dhia-sa.github.io](https://dhia-sa.github.io)
+**Live dashboard:** [open the app](https://indonesia-weather-pipeline-2bixeqvwpodjkoxqbz32a9.streamlit.app) · **Portfolio:** [dhia-sa.github.io](https://dhia-sa.github.io)
 
 > **Why weather?** In retail and F&B, weather drives store traffic and demand. This project builds a reliable,
 > tested weather dataset that could be joined to store sales to explain demand or improve forecasts.
+
+## Dashboard
+
+[![Indonesia Weather dashboard](docs/weather-dashboard-hero.jpg)](https://indonesia-weather-pipeline-2bixeqvwpodjkoxqbz32a9.streamlit.app)
+
+| Daily metrics & last 7 days | Temperature & rainfall trends |
+|---|---|
+| ![Metric tiles](docs/weather-dashboard-tiles.jpg) | ![Trends chart](docs/weather-dashboard-trends.jpg) |
+
+📄 [Download the full dashboard as PDF](docs/indonesia-weather-dashboard.pdf) · 🔗 [Open the live app](https://indonesia-weather-pipeline-2bixeqvwpodjkoxqbz32a9.streamlit.app)
 
 ## Architecture
 
@@ -109,7 +119,11 @@ Run the unit tests and linter with `pytest` and `ruff check .`
 4. **Daily runs** then happen automatically at 07:17 WIB. GitHub pauses scheduled workflows in repos with no
    activity for 60 days; re-enable the workflow in the Actions tab if that happens.
 5. **Dashboard:** on [Streamlit Community Cloud](https://share.streamlit.io), create an app from this repo with
-   main file `dashboard/app.py`. Under *Advanced settings → Secrets*, add:
+   main file `dashboard/app.py`. Under *Advanced settings → Secrets*, paste Neon's connection string as one line:
+   ```toml
+   DATABASE_URL = "postgresql://USER:PASSWORD@ep-xxxx.neon.tech/neondb?sslmode=require"
+   ```
+   or, alternatively, the separate settings:
    ```toml
    DB_HOST = "..."
    DB_PORT = "5432"
